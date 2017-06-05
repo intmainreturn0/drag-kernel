@@ -69,9 +69,13 @@ var initers = {
     },
 
     e_sin: function( $e ) {
-        var orig_off = $e.find( '.drag' ).drag( function( e, dd ) {
-            $( this ).css( { top: orig_off.top + 50 * Math.sin( ( dd.offsetX - orig_off.left ) / 60 ), left: dd.offsetX } )
-        } ).offset()
+        $e.find( '.drag' )
+            .on( 'dragstart', function( e, dd ) {
+                dd.orig_off = $( this ).offset()
+            } )
+            .drag( function( e, dd ) {
+                $( this ).css( { top: dd.orig_off.top + 50 * Math.sin( ( dd.offsetX - dd.orig_off.left ) / 60 ), left: dd.offsetX } )
+            } )
     },
 
     e_handle_top: function( $e ) {
@@ -89,6 +93,7 @@ var initers = {
                 $( dd.proxy ).offset( { top: dd.offsetY, left: dd.offsetX } )
             } )
             .on( "dragend", function( e, dd ) {
+                $( this ).css( { top: dd.originalY, left: dd.originalX } )      // без этого Safari подглючивает
                 $( this ).animate( { top: dd.offsetY, left: dd.offsetX } ).animate( { top: dd.originalY, left: dd.originalX } );
                 $( dd.proxy ).remove();
             } );
