@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300italic,700,700italic">
+    <link rel="stylesheet" href="https://cdn.rawgit.com/necolas/normalize.css/master/normalize.css">
+    <link rel="stylesheet" href="https://cdn.rawgit.com/milligram/milligram/master/dist/milligram.min.css">
+    <link rel="stylesheet" href="css/all.css">
+    <script src="https://code.jquery.com/jquery-2.2.4.min.js"></script>
+    <script src="src/drag_light.js"></script>
+    <script src="src/orderable.js"></script>
+    <script src="src/demo.js"></script>
+    <script>
+        window.onload = function() {
+            demoEntry()
+        }
+    </script>
+</head>
+<body class="container" style="position: static">
+
+<h3 style="margin-top: 10px;">drag light</h3>
+<p><i>Это — упрощенная версия собственного dragdrop, где оставлено только ядро для drag.</i></p>
+<p>Это попытка посмотреть на drag с другой стороны — а не так, как это делается в jquery ui и подобных фреймворках.</p>
+<p>Вместо того, чтобы обобщить все что можно и ввести кучу параметров, здесь делается наоборот. Предлагается быстрый и лаконичный паттерн
+    проектирования drag взаимодействий, который дает полный контроль над процессом.</p>
+<p>Паттерн не добавляет имена классов, не двигает сам элементы, не изменяет DOM. Это — грамотный набор callback'ов,
+    которые в каждом конкретном случае обрабатываются по-разному.</p>
+<p>В итоге, то, что сложно или даже невозможно сделать через jquery ui draggable, здесь делается легко, и работает это
+    в разы быстрее.</p>
+<hr>
+
+<div id="e_dragrelative" class="example">
+    <h3>Простой drag</h3>
+    <p>Можно таскать квадратики: по любым направлениями или только по горизонтали/вертикали.</p>
+    <div class="dummy-container">
+        <div class="drag l1"></div>
+        <div class="drag l2" data-horz="1"></div>
+        <div class="drag l3" data-vert="1"></div>
+    </div>
+</div>
+
+<div id="e_counters" class="example">
+    <h3>Счетчики</h3>
+    <p>Можно нажать мышку и тащить, и будет меняться значения счетчиков (один горизонтальный, другой вертикальный).<br>
+        Механизм drag тот же самый, события те же, но нужно менять не координаты, а текст.</p>
+    <div>
+        <div class="counter vert">0</div>
+        <div class="counter horz">0</div>
+    </div>
+</div>
+
+<div id="e_containment" class="example">
+    <h3>Ограничение контейнером</h3>
+    <p>Таскать квадраты можно только внутри контейнера, за него не утаскиваются.</p>
+    <div class="reorderable">
+        <div class="drag l1"></div>
+        <div class="drag l2"></div>
+        <div class="drag l3"></div>
+    </div>
+</div>
+
+<div id="e_slider" class="example">
+    <h3>Слайдер</h3>
+    <p>Реализация слайдера, которая также очень легко вписывается в данный механизм событий</p>
+    <div class="slider">
+        <div class="drag"></div>
+    </div>
+</div>
+
+<div id="e_incircle" class="example">
+    <h3>Внутри круга</h3>
+    <p>Нажимаешь на большой круг и тащишь, а мелкий позиционируется по границе большого по вектору из его центра к текущим координатам мыши.
+        То есть drag события привязываются к большому кругу! Но таскать нужно мелкий, причем по определенным правилам. <br>
+        Кстати, тут еще стоит distance=-1: при mousedown на большом круге dragstart/drag срабатывают сразу же
+        (не нужно двигать мышку даже на 1 пиксель) (click по большому кругу всегда будет suppressed).</p>
+    <div class="reorderable">
+        <div class="drag"></div>
+    </div>
+</div>
+
+<div id="e_grid" class="example">
+    <h3>Привязка к сетке</h3>
+    <p>Просто таскать к квадратике, но привязанные к 25-пиксельной сетке.</p>
+    <p>Опять-таки, это не какая-то настройка, а просто вызывающий код вместо <i>offsetX</i> делает <i>round( offsetX / 25 ) * 25</i>.</p>
+    <div class="dummy-container">
+        <div class="drag l1"></div>
+        <div class="drag l2"></div>
+        <div class="drag l3"></div>
+    </div>
+</div>
+
+<div id="e_sin" class="example">
+    <h3>Движение по синусоиде</h3>
+    <p>Квадрат следует не просто за курсором, а по синусоиде.</p>
+    <div class="dummy-container">
+        <div class="drag l1"></div>
+    </div>
+</div>
+
+<div id="e_handle_top" class="example">
+    <h3>Таскание за handle</h3>
+    <p>Если в примерах раньше можно было нажать на весь квадрат и таскать, то здесь - только за заголовок (а просто при нажатии на квадрат будет
+        onclick). Естественно, если подобный handle добавить во все примеры выше, они тоже будут работать.</p>
+    <div class="dummy-container">
+        <div class="drag has-handle l1">
+            <div class="handle">HANDLE</div>
+        </div>
+        <div class="drag has-handle l2">
+            <div class="handle">HANDLE</div>
+        </div>
+        <div class="drag has-handle l3">
+            <div class="handle">HANDLE</div>
+        </div>
+    </div>
+</div>
+
+<div id="e_proxy" class="example position-static">
+    <h3>Proxy</h3>
+    <p>Вместо того чтобы таскаться самому, элемент может создать proxy, который будет таскаться, а при отпускании кнопки мыши делать какие-то действия
+        (здесь он анимируется до прокси и обратно).</p>
+    <div class="dummy-container">
+        <div class="drag l1"></div>
+        <div class="drag l2"></div>
+        <div class="drag l3"></div>
+    </div>
+</div>
+
+<div id="e_resize" class="example">
+    <h3>Ресайз</h3>
+    <p>По сути, нижеприведенный ресайз — не что иное, как drag за handle, только изменяются не координаты, а размер объекта.</p>
+    <div class="dummy-container">
+        <div class="drag l1 has-handle">
+            <div class="resizer"></div>
+        </div>
+        <div class="drag l2 has-handle">
+            <div class="resizer"></div>
+        </div>
+        <div class="drag l3 has-handle">
+            <div class="resizer"></div>
+        </div>
+    </div>
+</div>
+
+<div id="e_multi" class="example">
+    <h3>Таскание нескольких одновременно</h3>
+    <p>Можно отметить кликами несколько квадратов, и когда тащишь один из них — остальные параллельно.</p>
+    <div class="dummy-container">
+        <div class="drag l1"></div>
+        <div class="drag l2"></div>
+        <div class="drag l3"></div>
+    </div>
+</div>
+
+<div id="e_multi_proxy" class="example">
+    <h3>Несколько + Proxy</h3>
+    <p>Как и в примере выше, только для каждого элемента еще создается proxy.<br>
+        Кстати, если выделить несколько здесь и в примере выше, то они будут работать одновременно (только эти с прокси, а те нет).</p>
+    <div class="dummy-container">
+        <div class="drag l1"></div>
+        <div class="drag l2"></div>
+        <div class="drag l3"></div>
+    </div>
+</div>
+
+<div id="e_orderable" class="example">
+    <h3>Простой orderable</h3>
+    <p>Небольшая надстройка над просто drag — называется orderable — позволяет делать такие штуки:</p>
+    <div class="orderable">
+        <div>1</div>
+        <div>2</div>
+        <div>3</div>
+        <div>4</div>
+        <div>5</div>
+    </div>
+</div>
+
+<div id="e_orderable_heights" class="example">
+    <h3>Разные высоты</h3>
+    <p>Orderable работает, если высоты у таскаемых элементов разные, и если есть зебра (.odd-класс у визуально нечетных).
+        По горизонтали также работает (пример не стал делать).</p>
+    <div class="orderable has-even-odd">
+        <div style="line-height: 20px;" class="odd">один</div>
+        <div style="line-height: 40px;">два</div>
+        <div style="line-height: 30px;" class="odd">три</div>
+        <div style="line-height: 40px;">четыре</div>
+        <div style="line-height: 20px;" class="odd">пять</div>
+    </div>
+</div>
+
+<div id="e_orderable_both" class="example" style="margin-bottom: 140px;">
+    <h3>По всем направлениям</h3>
+    <div class="orderable-both" data-dir="b">
+        <div>1</div>
+        <div>2</div>
+        <div>3</div>
+        <div>4</div>
+        <div>5</div>
+        <div>6</div>
+        <div>7</div>
+        <div>8</div>
+        <div>9</div>
+        <div>10</div>
+        <div>11</div>
+        <div>12</div>
+        <div>13</div>
+        <div>14</div>
+        <div>15</div>
+        <div>16</div>
+        <div>17</div>
+    </div>
+</div>
+
+
+</body>
+</html>

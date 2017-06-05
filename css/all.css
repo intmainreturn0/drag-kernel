@@ -1,0 +1,193 @@
+.example {
+    margin-bottom: 50px;
+}
+
+.example.position-static {
+    position: static;
+}
+
+.hover_block {
+    position: fixed; left: 0; right: 0; top: 0; bottom: 0; z-index: 10000;
+    background: transparent;
+}
+
+.click-alert {
+    position: fixed; right: 20px; top: 20px; padding: 20px;
+    background: #88b; color: white; font-size: 18px;
+}
+
+.click-alert + .click-alert { top: 90px; }
+
+.click-alert + .click-alert + .click-alert { top: 160px; }
+
+.drag {
+    position: absolute;
+    border: 1px solid #aac;
+    background: #cef;
+    height: 50px;
+    width: 50px;
+    cursor: move;
+    z-index: 2;
+}
+
+.drag.has-handle {
+    cursor: default;
+}
+
+.drag.proxy {
+    opacity: 0.5;
+}
+
+.drag.big {
+    width: 80px; height: 80px;
+}
+
+.l1 { left: 50px; }
+
+.l2 { left: 150px; }
+
+.l3 { left: 250px; }
+
+.big.l2 { left: 200px; }
+
+.big.l3 { left: 350px; }
+
+.reorderable {
+    position: relative;
+    height: 100px;
+    padding-top: 20px; padding-bottom: 20px;
+    margin-top: 20px;
+    border: 1px dotted #ccc;
+}
+
+.dummy-container {
+    /* тут важно, что position остается static */
+    height: 100px;
+    margin-top: 20px;
+}
+
+.handle {
+    background: #bcd;
+    border-bottom: 1px solid #aac;
+    cursor: move;
+    font-size: 10px;
+    line-height: 14px;
+    text-align: center;
+    color: gray;
+}
+
+.resizer {
+    position: absolute;
+    bottom: -1px;
+    right: -1px;
+    cursor: nw-resize;
+    height: 8px;
+    width: 8px;
+    border: 1px solid #88b;
+    background: #9ac;
+}
+
+.drag.selected {
+    background: #8fffb4;
+}
+
+.drag[data-draghint]:after {
+    content: attr(data-draghint);
+    font-size: 18px; color: black; text-align: center;
+    position: absolute; top: -20px; width: 200%; left: -50%;
+}
+
+.drag[data-vert] { cursor: ns-resize }
+
+.drag[data-horz] { cursor: ew-resize }
+
+.slider { height: 30px; position: relative; width: 300px; margin-top: 20px; }
+
+.slider:after { position: absolute; left: 15px; right: 15px; top: 50%; margin-top: -1px; border-top: 2px solid silver; content: ''; }
+
+.slider > .drag { width: 30px; height: 30px; background: #3f8aff; opacity: 0.7; }
+
+#e_counters .counter {
+    display: inline-block;
+    color: gray;
+    border: 1px solid silver;
+    font-weight: bold;
+    margin-left: 100px;
+    margin-top: 30px;
+    width: 50px;
+    text-align: center;
+}
+
+#e_counters .counter.vert { cursor: ns-resize; }
+
+#e_counters .counter.horz { cursor: ew-resize; }
+
+#e_counters .counter:hover { background: #f7f7f7; border-color: gray; }
+
+#e_counters .counter.active { background: #eee; border-color: black; }
+
+#e_incircle .reorderable { width: 150px; height: 150px; border-radius: 50%; padding: 0; margin-top: 20px; margin-left: 150px; }
+
+#e_incircle .drag { border-radius: 50%; left: 50px; top: 0; cursor: default; }
+
+/* --- */
+
+.orderable {
+    width: 400px;
+    border: 1px solid #ddd;
+    font-size: 0;
+}
+
+.orderable > div {
+    border-bottom: 1px solid #ddd;
+    padding: 15px;
+    position: relative;
+    background: #fff;
+    font-size: 14px;
+}
+
+.orderable > div:last-child {
+    border-bottom: none;
+}
+
+.orderable .orderable_dragging {
+    z-index: 1;
+    background: #eef !important;
+    opacity: 0.7;
+    border-bottom-color: transparent;
+}
+
+.orderable.has-even-odd > div { background: #fcc; }
+
+.orderable.has-even-odd > div.odd { background: #cfc; }
+
+.orderable-horz {
+    width: 800px; height: 100px; border: 1px solid #ddd; padding: 10px;
+    font-size: 0;
+}
+
+.orderable-horz > div {
+    border-right: 1px solid #ddd;
+    padding: 0 10px;
+    line-height: 100px;
+    position: relative;
+    background: #fff;
+    display: inline-block;
+    font-size: 14px;
+}
+
+.orderable-horz > div:last-child {
+    border-right: none;
+}
+
+.orderable-both {
+    width: 400px; padding: 10px;
+    border: 1px solid #ddd;
+    font-size: 0;
+}
+
+.orderable-both > div {
+    display: inline-block; background: #ddd; margin: 5px;
+    width: 50px; line-height: 50px; font-size: 20px; vertical-align: top; text-align: center;
+    position: relative;
+}
